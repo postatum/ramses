@@ -4,6 +4,8 @@ from contextlib import contextmanager
 import six
 import inflection
 
+from nefertari.utils import split_strip
+
 
 log = logging.getLogger(__name__)
 
@@ -337,3 +339,10 @@ def patch_view_model(view_cls, model_cls):
         yield
     finally:
         view_cls.Model = original_model
+
+
+def split_ignored_routes(config):
+    """ Helper function to convert param string into list. """
+    param = 'ramses.ignored_routes'
+    val = config.registry.settings.get(param, '')
+    config.registry.settings[param] = split_strip(val)
