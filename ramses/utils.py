@@ -340,6 +340,41 @@ def patch_view_model(view_cls, model_cls):
 
 
 def json_to_db_schema(props):
+    props_map = {
+        'additionalItems': '',
+        'items': '',
+        'maxItems': '',
+        'minItems': '',
+        'uniqueItems': '',
+        'multipleOf': '',
+        'maximum': '',
+        'minimum': '',
+        'maxProperties': '',
+        'minProperties': '',
+        'additionalProperties': '',
+        'properties': '',
+        'patternProperties': '',
+        'dependencies': '',
+        'maxLength': '',
+        'minLength': '',
+        'pattern': '',
+        'format': '',
+        'enum': '',
+        'type': '',
+        'title': '',
+        'description': '',
+        'default': '',
+    }
+    types_map = {
+        'array': '',
+        'boolean': '',
+        'integer': '',
+        'number': '',
+        'null': '',
+        'object': '',
+        'string': '',
+    }
+    # TODO: Convert here
     converted = {}
     return converted
 
