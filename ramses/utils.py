@@ -223,7 +223,7 @@ def attr_subresource(raml_resource, route_name):
     schema = resource_schema(static_parent) or {}
     properties = schema.get('properties', {})
     if route_name in properties:
-        db_settings = properties[route_name].get('_db_settings', {})
+        db_settings = get_db_settings(properties[route_name])
         return db_settings.get('type') in ('dict', 'list')
     return False
 
@@ -242,7 +242,7 @@ def singular_subresource(raml_resource, route_name):
     if route_name not in properties:
         return False
 
-    db_settings = properties[route_name].get('_db_settings', {})
+    db_settings = get_db_settings(properties[route_name])
     is_obj = db_settings.get('type') == 'relationship'
     single_obj = not db_settings.get('uselist', True)
     return is_obj and single_obj
@@ -337,3 +337,14 @@ def patch_view_model(view_cls, model_cls):
         yield
     finally:
         view_cls.Model = original_model
+
+
+def json_to_db_schema(props):
+    converted = {}
+    return converted
+
+
+def get_db_settings(props):
+    db_settings = json_to_db_schema(props)
+    db_settings.update(props.get('_db_settings', {}))
+    return db_settings

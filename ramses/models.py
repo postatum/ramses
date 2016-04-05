@@ -6,7 +6,7 @@ from inflection import pluralize
 from .utils import (
     resolve_to_callable, is_callable_tag,
     resource_schema, generate_model_name,
-    get_events_map)
+    get_events_map, get_db_settings)
 from . import registry
 
 
@@ -127,11 +127,12 @@ def generate_model_cls(config, schema, model_name, raml_resource,
         if field_name in attrs:
             continue
 
-        db_settings = props.get('_db_settings')
-        if db_settings is None:
+        field_kwargs = get_db_settings(props)
+
+        # Skip non-generetable fields
+        if not field_kwargs:
             continue
 
-        field_kwargs = db_settings.copy()
         field_kwargs['required'] = bool(field_kwargs.get('required'))
 
         for default_attr_key in ('default', 'onupdate'):
@@ -258,7 +259,7 @@ def setup_fields_processors(config, model_cls, schema):
             config.add_field_processors(processors, **setup_kwargs)
 
         if backref_processors:
-            db_settings = props.get('_db_settings', {})
+            db_settings = get_db_settings(props)
             is_relationship = db_settings.get('type') == 'relationship'
             document = db_settings.get('document')
             backref_name = db_settings.get('backref_name')
