@@ -381,18 +381,25 @@ def _convert_json_props(props):
     for key in props:
         if key in props_map and props_map[key]:
             converted[props_map[key]] = converted.pop(key)
-
-    # Process string formats
-    if converted.get('type') == 'string':
-        fmt = converted.get('format')
-        if fmt == 'date-time':
-            converted['type'] = 'datetime'
-
     return converted
 
 
+def _assume_types(props):
+    # String with format may have represent type
+    if props.get('type') == 'string':
+        fmt = props.get('format')
+        if fmt == 'date-time':
+            props['type'] = 'datetime'
+    # Field with choices is a ChoiceField
+    if 'choices' in props:
+        props['type'] = 'choice'
+    return props
+
+
 def get_db_settings(props):
-    db_settings = _convert_json_props(props)
+    db_settings = {}
     db_settings.update(_convert_json_type(props))
+    db_settings.update(_convert_json_props(props))
+    db_settings = _assume_types(db_settings)
     db_settings.update(db_settings.pop('_db_settings', {}))
     return db_settings
