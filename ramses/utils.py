@@ -339,7 +339,27 @@ def patch_view_model(view_cls, model_cls):
         view_cls.Model = original_model
 
 
-def json_to_db_schema(props):
+def _convert_json_type(props):
+    types_map = {
+        'array':    'list',
+        'boolean':  'boolean',
+        'integer':  'integer',
+        'number':   'float',
+        'object':   'dict',
+        'string':   'string',
+    }
+    converted = {}
+    types = props.get('type') or []
+    types = [t for t in types if t]
+    if not types:
+        return converted
+    type_ = types[0]
+    if type_ and type_ in types_map:
+        converted['type'] = types_map[type_]
+    return converted
+
+
+def _convert_json_props(props):
     props_map = {
         'additionalItems': '',
         'items': '',
@@ -360,26 +380,17 @@ def json_to_db_schema(props):
         'pattern': '',
         'format': '',
         'enum': '',
-        'type': '',
         'title': '',
         'description': '',
         'default': '',
     }
-    types_map = {
-        'array': '',
-        'boolean': '',
-        'integer': '',
-        'number': '',
-        'null': '',
-        'object': '',
-        'string': '',
-    }
-    # TODO: Convert here
-    converted = {}
+    # converted = props.copy()
+    return {}
     return converted
 
 
 def get_db_settings(props):
-    db_settings = json_to_db_schema(props)
+    db_settings = _convert_json_props(props)
+    db_settings.update(_convert_json_type(props))
     db_settings.update(props.get('_db_settings', {}))
     return db_settings
