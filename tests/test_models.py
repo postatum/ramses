@@ -284,7 +284,7 @@ class TestGenerateModelCls(object):
         model_cls, auth_model = models.generate_model_cls(
             config, schema=schema, model_name='Story',
             raml_resource=None, es_based=False)
-        assert not models.engine.PickleField.called
+        assert models.engine.PickleField.called
 
     def test_unknown_field_type(
             self, mock_reg, mock_subscribers, mock_proc):

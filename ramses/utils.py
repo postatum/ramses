@@ -350,47 +350,49 @@ def _convert_json_type(props):
     }
     converted = {}
     types = props.get('type') or []
+    if not isinstance(types, list):
+        types = [types]
     types = [t for t in types if t]
     if not types:
         return converted
     type_ = types[0]
     if type_ and type_ in types_map:
         converted['type'] = types_map[type_]
+    else:
+        converted['type'] = type_
     return converted
 
 
 def _convert_json_props(props):
     props_map = {
-        'additionalItems': '',
-        'items': '',
-        'maxItems': '',
-        'minItems': '',
-        'uniqueItems': '',
-        'multipleOf': '',
-        'maximum': '',
-        'minimum': '',
-        'maxProperties': '',
-        'minProperties': '',
-        'additionalProperties': '',
-        'properties': '',
-        'patternProperties': '',
-        'dependencies': '',
-        'maxLength': '',
-        'minLength': '',
-        'pattern': '',
-        'format': '',
-        'enum': '',
-        'title': '',
-        'description': '',
-        'default': '',
+        # 'additionalItems': '',
+        # 'items': '',
+        'minimum': 'min_value',
+        'maximum': 'max_value',
+        'minLength': 'min_length',
+        'maxLength': 'max_length',
+        'pattern': 'regex',
+        'enum': 'choices',
+        'description': 'help_text',
     }
-    # converted = props.copy()
-    return {}
+    converted = props.copy()
+
+    # Convert JSON props to db field settings
+    for key in props:
+        if key in props_map and props_map[key]:
+            converted[props_map[key]] = converted.pop(key)
+
+    # Process string formats
+    if converted.get('type') == 'string':
+        fmt = converted.get('format')
+        if fmt == 'date-time':
+            converted['type'] = 'datetime'
+
     return converted
 
 
 def get_db_settings(props):
     db_settings = _convert_json_props(props)
     db_settings.update(_convert_json_type(props))
-    db_settings.update(props.get('_db_settings', {}))
+    db_settings.update(db_settings.pop('_db_settings', {}))
     return db_settings
