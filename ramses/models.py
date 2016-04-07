@@ -139,7 +139,6 @@ def generate_model_cls(config, schema, model_name, raml_resource,
             value = field_kwargs.get(default_attr_key)
             if is_callable_tag(value):
                 field_kwargs[default_attr_key] = resolve_to_callable(value)
-
         type_name = (
             field_kwargs.pop('type', 'string') or 'string').lower()
         if type_name not in type_fields:

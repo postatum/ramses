@@ -352,7 +352,7 @@ def _convert_json_type(props):
     types = props.get('type') or []
     if not isinstance(types, list):
         types = [types]
-    types = [t for t in types if t]
+    types = [t for t in types if t != 'null']
     if not types:
         return converted
     type_ = types[0]
@@ -397,9 +397,8 @@ def _assume_types(props):
 
 
 def get_db_settings(props):
-    db_settings = {}
-    db_settings.update(_convert_json_type(props))
-    db_settings.update(_convert_json_props(props))
+    db_settings = _convert_json_props(props)
+    db_settings.update(_convert_json_type(db_settings))
     db_settings = _assume_types(db_settings)
     db_settings.update(db_settings.pop('_db_settings', {}))
     return db_settings
