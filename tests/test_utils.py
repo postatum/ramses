@@ -409,3 +409,80 @@ class TestUtils(object):
         assert view_cls.Model is model1
         assert not model1.called
         model2.assert_called_once_with()
+
+
+class TestConversionUtils(object):
+    def test_convert_json_type_null_type(self):
+        props = {'type': ['null']}
+        assert utils._convert_json_type(props) == {}
+
+    def test_convert_json_type_no_type(self):
+        props = {'type': []}
+        assert utils._convert_json_type(props) == {}
+        props = {}
+        assert utils._convert_json_type(props) == {}
+
+    def test_convert_json_type_unknown_type(self):
+        props = {'type': ['foobar', 'null']}
+        assert utils._convert_json_type(props) == {'type': 'foobar'}
+
+    def test_convert_json_type_converted(self):
+        props = {'type': 'array'}
+        assert utils._convert_json_type(props) == {'type': 'list'}
+        props = {'type': ['number']}
+        assert utils._convert_json_type(props) == {'type': 'float'}
+
+    def test_convert_json_props_converted(self):
+        props = {
+            'minimum': '1',
+            'maximum': '2',
+            'minLength': '3',
+            'maxLength': '4',
+            'pattern': '5',
+            'enum': '6',
+            'description': '7',
+        }
+        assert utils._convert_json_props(props) == {
+            'min_value': '1',
+            'max_value': '2',
+            'min_length': '3',
+            'max_length': '4',
+            'regex': '5',
+            'choices': '6',
+            'help_text': '7',
+        }
+
+    def test_convert_json_props_unknown_prop(self):
+        props = {'foo': 'bar'}
+        assert utils._convert_json_props(props) == {'foo': 'bar'}
+
+    def test_convert_json_props_is_copied(self):
+        props = {'foo': 'bar'}
+        assert utils._convert_json_props(props) is not props
+
+    def test_assume_types_datetime(self):
+        props = {'type': 'string', 'format': 'date-time'}
+        utils._assume_types(props)
+        assert props['type'] == 'datetime'
+
+    def test_assume_types_choices(self):
+        props = {'type': 'string', 'choices': []}
+        utils._assume_types(props)
+        assert props['type'] == 'choice'
+
+    def test_assume_types_nothing_happens(self):
+        props = {'type': 'array'}
+        utils._assume_types(props)
+        assert props == {'type': 'array'}
+
+    def test_get_db_settings(self):
+        props = {
+            'type': 'array',
+            'minLength': 3,
+            '_db_settings': {'foo': 1}
+        }
+        assert utils.get_db_settings(props) == {
+            'type': 'list',
+            'min_length': 3,
+            'foo': 1
+        }
