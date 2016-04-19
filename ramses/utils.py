@@ -340,6 +340,12 @@ def patch_view_model(view_cls, model_cls):
 
 
 def _convert_json_type(props):
+    """ Convert JSON Schema type names to db type names.
+
+    :param props: Dict of all schema params.
+    :returns dict: Containing key 'type' value of which is valid
+        db type name.
+    """
     types_map = {
         'array':    'list',
         'boolean':  'boolean',
@@ -364,6 +370,11 @@ def _convert_json_type(props):
 
 
 def _convert_json_props(props):
+    """ Convert JSON Schema params to db params.
+
+    :param props: Dict of JSON Schema params.
+    :returns dict: Containing values under converted keys.
+    """
     props_map = {
         # 'additionalItems': '',
         # 'items': '',
@@ -385,6 +396,11 @@ def _convert_json_props(props):
 
 
 def _assume_types(props):
+    """ Assume more complex types from additional params.
+
+    :param props: Dict of all schema params.
+    :returns dict: Original dict with type replaced.
+    """
     # String with format may have represent type
     if props.get('type') == 'string':
         fmt = props.get('format')
@@ -397,6 +413,13 @@ def _assume_types(props):
 
 
 def get_db_settings(props):
+    """ Get db settings from JSON Schema properties.
+
+    Also converts JSON Schema properties and types to valid db values.
+
+    :param props: Dict containing all JSON Schema properties.
+    :returns dict: Containing converted types and properties.
+    """
     db_settings = _convert_json_props(props)
     db_settings.update(_convert_json_type(db_settings))
     db_settings = _assume_types(db_settings)
