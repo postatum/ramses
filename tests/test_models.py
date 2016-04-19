@@ -170,10 +170,10 @@ class TestGenerateModelCls(object):
         config = config_mock()
         models.engine.FloatField.reset_mock()
         schema = self._test_schema()
+        schema['required'] = ['progress']
         schema['properties']['progress'] = {
             "_db_settings": {
                 "type": "float",
-                "required": True,
                 "default": 0,
             }
         }

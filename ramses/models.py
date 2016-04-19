@@ -123,6 +123,7 @@ def generate_model_cls(config, schema, model_name, raml_resource,
 
     # Generate fields from properties
     properties = schema.get('properties', {})
+    required = schema.get('required') or []
     for field_name, props in properties.items():
         if field_name in attrs:
             continue
@@ -133,7 +134,7 @@ def generate_model_cls(config, schema, model_name, raml_resource,
         if not field_kwargs:
             continue
 
-        field_kwargs['required'] = bool(field_kwargs.get('required'))
+        field_kwargs['required'] = field_name in required
 
         for default_attr_key in ('default', 'onupdate'):
             value = field_kwargs.get(default_attr_key)
