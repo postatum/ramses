@@ -115,4 +115,4 @@ Here are few examples that should make it self-explanatory:
     /alien-users -> AlienUser
 
 
-This might come handy when trying to access models from ramses event handles for example.
+This might come handy when trying to access models from ramses event handlers for example.
