@@ -14,8 +14,6 @@ Getting started
 
 2. Tada! Start editing api.raml to modify the API and items.json for the schema.
 
-Project created this way will also contain basic HTTP tests which can be run with ``py.test`` command.
-
 
 Requirements
 ------------
